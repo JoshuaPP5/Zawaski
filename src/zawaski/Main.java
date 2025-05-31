@@ -1,5 +1,6 @@
 package zawaski;
 
+import java.util.List;
 import java.util.Scanner;
 import java.security.NoSuchAlgorithmException;
 import java.io.IOException;
@@ -99,6 +100,7 @@ public class Main {
             System.out.println("2) Manage characters");
             System.out.println("3) Start battle");
             System.out.println("4) Logout");
+            System.out.println("5) Inventory");
             System.out.print("Select an option: ");
             String choice = scanner.nextLine().trim();
 
@@ -118,6 +120,9 @@ public class Main {
                     currentCharacter = null;
                     logout = true;
                     break;
+                case "5":
+                    battleSystem.printPlayerInventory();
+                    break;
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
@@ -128,31 +133,71 @@ public class Main {
         boolean backToUserMenu = false;
         while (!backToUserMenu) {
             System.out.println("\nManage Characters:");
-            System.out.println("1) Create new character");
-            System.out.println("2) Change character's name");
-            System.out.println("3) Delete character");
-            System.out.println("4) Return to user menu");
+            System.out.println("1) Select character");
+            System.out.println("2) Create new character");
+            System.out.println("3) Change character's name");
+            System.out.println("4) Delete character");
+            System.out.println("5) Return to user menu");
             System.out.print("Select an option: ");
             String choice = scanner.nextLine().trim();
 
             switch (choice) {
-                case "1":
-                    if (currentUser != null) {
-                        System.out.print("Enter new character name: ");
-                        String newCharName = scanner.nextLine().trim();
-                        if (newCharName.isEmpty()) {
-                            System.out.println("Character name cannot be empty.");
-                            break;
-                        }
-                        int newId = Character.generateNewId();
-                        Character newCharacter = new Character(newId, newCharName, currentUser.getUsername());
-                        currentCharacter = newCharacter;
-                        System.out.println("Character '" + newCharName + "' created successfully with ID " + newId + ".");
-                    } else {
-                        System.out.println("No user logged in.");
-                    }
-                    break;
-                case "2":
+	            case "1":
+	            	if (currentUser != null) {
+	                    // Fetch all characters for the current user
+	                    List<Character> userCharacters = Character.loadCharactersByUser(currentUser.getUsername());
+
+	                    if (userCharacters.isEmpty()) {
+	                        System.out.println("You have no characters. Please create one first.");
+	                        break;
+	                    }
+
+	                    System.out.println("Select a character:");
+	                    for (int i = 0; i < userCharacters.size(); i++) {
+	                        System.out.println((i + 1) + ") " + userCharacters.get(i).getCharacterName());
+	                    }
+	                    System.out.print("Enter the number of the character to select: ");
+	                    String input = scanner.nextLine().trim();
+
+	                    try {
+	                        int selectedIndex = Integer.parseInt(input) - 1;
+	                        if (selectedIndex >= 0 && selectedIndex < userCharacters.size()) {
+	                            currentCharacter = userCharacters.get(selectedIndex);
+	                            System.out.println("Character '" + currentCharacter.getCharacterName() + "' selected.");
+	                        } else {
+	                            System.out.println("Invalid selection. Please try again.");
+	                        }
+	                    } catch (NumberFormatException e) {
+	                        System.out.println("Invalid input. Please enter a number.");
+	                    }
+	                } else {
+	                    System.out.println("No user logged in.");
+	                }
+	                break;
+	            case "2":
+	                if (currentUser != null) {
+	                    // Check how many characters the user already has
+	                    List<Character> userCharacters = Character.loadCharactersByUser(currentUser.getUsername());
+	                    if (userCharacters.size() >= 3) {
+	                        System.out.println("You already have the maximum of 3 characters. Delete one before creating a new character.");
+	                        break;
+	                    }
+
+	                    System.out.print("Enter new character name: ");
+	                    String newCharName = scanner.nextLine().trim();
+	                    if (newCharName.isEmpty()) {
+	                        System.out.println("Character name cannot be empty.");
+	                        break;
+	                    }
+	                    int newId = Character.generateNewId();
+	                    Character newCharacter = new Character(newId, newCharName, currentUser.getUsername());
+	                    currentCharacter = newCharacter;
+	                    System.out.println("Character '" + newCharName + "' created successfully with ID " + newId + ".");
+	                } else {
+	                    System.out.println("No user logged in.");
+	                }
+	                break;
+                case "3":
                     if (currentCharacter != null) {
                         System.out.print("Enter new name for character '" + currentCharacter.getCharacterName() + "': ");
                         String updatedName = scanner.nextLine().trim();
@@ -166,7 +211,7 @@ public class Main {
                         System.out.println("No character selected. Please create or select a character first.");
                     }
                     break;
-                case "3":
+                case "4":
                     if (currentCharacter != null) {
                         System.out.print("Are you sure you want to delete character '" + currentCharacter.getCharacterName() + "'? (yes/no): ");
                         String confirmDelete = scanner.nextLine().trim().toLowerCase();
@@ -181,7 +226,7 @@ public class Main {
                         System.out.println("No character selected. Please create or select a character first.");
                     }
                     break;
-                case "4":
+                case "5":
                     backToUserMenu = true;
                     break;
                 default:
@@ -257,51 +302,43 @@ public class Main {
     }
 
     private static void handleStartBattle(Scanner scanner) {
-        if (currentUser == null) {
-            System.out.println("You must be logged in to start a battle.");
-            return;
-        }
         if (currentCharacter == null) {
-            System.out.println("You must create or load a character before starting a battle.");
+            System.out.println("No character selected. Please create or select a character first.");
             return;
         }
-        System.out.println("\n--- Starting Battle ---");
+        
+        Enemy enemy = new Enemy(1, "Goblin", 1, 100, 50, 25);
+
+        // Initialize battle system
+        battleSystem = new BattleSystem();
+        battleSystem.populatePlayerInventory();
+        battleSystem.initializeBattle(currentCharacter, enemy);
         battleSystem.startBattle();
 
-        boolean battleOver = false;
-        while (!battleOver) {
-            System.out.println("\nBattle Menu:");
-            System.out.println("1) Play a card");
-            System.out.println("2) End turn");
-            System.out.println("3) Quit battle");
-            System.out.print("Select an option: ");
-            String choice = scanner.nextLine().trim();
+        System.out.println("Battle started between " + currentCharacter.getCharacterName() + " and " + enemy.getEnemyType() + "!");
 
-            switch (choice) {
-                case "1":
-                    System.out.print("Enter card name to play: ");
-                    String cardName = scanner.nextLine().trim();
-                    // For demo, create a dummy card with the given name and fixed AP cost
-                    Card card = new Card(cardName, 1) {
-                        @Override
-                        public void effect(Character character, BattleSystem battleSystem) {
-                            System.out.println("Effect of card '" + cardName + "' applied to character: " + character.getCharacterName());
-                            // You can add more effect logic here
-                        }
-                    };
-                    // Call playCard with both card and currentCharacter
-                    battleSystem.playCard(card, currentCharacter);
-                    break;
-                case "2":
-                    battleSystem.endTurn();
-                    break;
-                case "3":
-                    System.out.println("Exiting battle...");
-                    battleOver = true;
-                    break;
-                default:
-                    System.out.println("Invalid option. Please try again.");
+        // Battle loop
+        while (!battleSystem.isBattleOver()) {
+            System.out.println("\nYour turn. " + "Current HP: " + currentCharacter.getStatus().getHp() + "/" + currentCharacter.getStatus().getMaxHp() + " | Current AP: " + currentCharacter.getStatus().getAp() + "/" + currentCharacter.getStatus().getMaxAp());
+            System.out.println("Enemy HP: " + enemy.getStatus().getHp() + "/" + enemy.getStatus().getMaxHp() + " | Enemy AP: " + enemy.getStatus().getAp() + "/" + enemy.getStatus().getMaxAp());
+            battleSystem.showPlayerHand();
+
+            System.out.print("Enter card number to play or 'end' to end turn: ");
+            String input = scanner.nextLine().trim();
+
+            if (input.equalsIgnoreCase("end")) {
+                battleSystem.endPlayerTurn();
+            } else {
+                try {
+                    int cardIndex = Integer.parseInt(input) - 1;
+                    battleSystem.playCardFromHand(cardIndex, currentCharacter);
+                } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                    System.out.println("Invalid input. Please enter a valid card number or 'end'.");
+                }
             }
         }
+
+        System.out.println("Battle ended. " + (battleSystem.isPlayerWinner() ? "You won!" : "You lost."));
     }
+
 }

@@ -5,10 +5,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 
-public class Character extends GameEntity {
+public class Character extends GameEntity implements Combatant {
     private String characterName;
     private Status status;
     private String ownerUsername;  // Changed from User to String
+    private int attackPower;
+    private List<String> startingCardNames;
 
     private static final String CHARACTER_DATA_FILE = "characters.dat";
 
@@ -18,9 +20,18 @@ public class Character extends GameEntity {
         this.characterName = characterName;
         this.ownerUsername = ownerUsername;
         this.status = new Status(); // Composition: Character owns Status
+        this.startingCardNames = new ArrayList<>();
         saveCharacterData();
     }
 
+    public List<String> getStartingCardNames() {
+        return startingCardNames;
+    }
+
+    public void addStartingCard(String cardName) {
+        startingCardNames.add(cardName);
+    }
+    
     // Constructor for loading from file (with status values)
     public Character(int id, String characterName, String ownerUsername, int hp, int ap, int level) {
         super(id, characterName);
@@ -52,9 +63,10 @@ public class Character extends GameEntity {
     }
 
     @Override
-    public String getStatus() {
-        return status.toString();
+    public Status getStatus() {
+        return this.status;
     }
+
 
     private void saveCharacterData() {
         try {
@@ -79,8 +91,6 @@ public class Character extends GameEntity {
         this.characterName = characterName;
         saveCharacterData();
     }
-
-    public Status getStatusObject() { return status; }
 
     public String getOwnerUsername() { return ownerUsername; }
     public void setOwnerUsername(String ownerUsername) {
@@ -140,4 +150,67 @@ public class Character extends GameEntity {
         }
         return maxId + 1;
     }
+    
+    public int getCurrentAP() {
+        return status.getAp();
+    }
+
+    public boolean deductAP(int amount) {
+        int currentAp = status.getAp();
+        if (currentAp >= amount) {
+            status.setAp(currentAp - amount);
+            saveCharacterData(); // Persist changes
+            return true;
+        }
+        return false;
+    }
+
+    public void takeDamage(int amount) {
+        if (amount < 0) {
+            return; // Ignore negative damage
+        }
+        int newHp = status.getHp() - amount;
+        if (newHp < 0) {
+            newHp = 0;
+        }
+        status.setHp(newHp);
+        saveCharacterData();
+    }
+
+    public void heal(int amount) {
+        if (amount < 0) {
+            return; // Ignore negative healing
+        }
+        int newHp = status.getHp() + amount;
+        int maxHp = 100; // Should match Status.MAX_HP or be configurable
+        if (newHp > maxHp) {
+            newHp = maxHp;
+        }
+        status.setHp(newHp);
+        saveCharacterData();
+    }
+
+    public void restoreAP(int amount) {
+        if (amount < 0) {
+            return; // Ignore negative AP restoration
+        }
+        int newAp = status.getAp() + amount;
+        int maxAp = 50; // Should match Status.MAX_AP or be configurable
+        if (newAp > maxAp) {
+            newAp = maxAp;
+        }
+        status.setAp(newAp);
+        saveCharacterData();
+    }
+
+	@Override
+	public boolean isAlive() {
+		return status.getHp() > 0;
+	}
+
+	@Override
+	public int getAttackPower() {
+		return attackPower;
+	}
+
 }

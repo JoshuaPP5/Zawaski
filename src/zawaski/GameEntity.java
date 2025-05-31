@@ -15,5 +15,5 @@ public abstract class GameEntity {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public abstract String getStatus();
+    public abstract Status getStatus();
 }

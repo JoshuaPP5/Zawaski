@@ -1,12 +1,16 @@
 package zawaski;
 
-public abstract class Card {
-    protected String cardName;
-    protected int apCost;
+import java.util.function.BiConsumer;
 
-    public Card(String cardName, int apCost) {
+public class Card {
+    private String cardName;
+    private int apCost;
+    private BiConsumer<Character, BattleSystem> effectFunction;
+
+    public Card(String cardName, int apCost, BiConsumer<Character, BattleSystem> effectFunction) {
         this.cardName = cardName;
         this.apCost = apCost;
+        this.effectFunction = effectFunction;
     }
 
     public String getCardName() {
@@ -17,6 +21,7 @@ public abstract class Card {
         return apCost;
     }
 
-    // Abstract method to apply the card's effect during battle
-    public abstract void effect(Character character, BattleSystem battleSystem);
+    public void effect(Character character, BattleSystem battleSystem) {
+        effectFunction.accept(character, battleSystem);
+    }
 }
