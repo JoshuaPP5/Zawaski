@@ -44,12 +44,22 @@ public class Enemy extends GameEntity implements Combatant {
         status.setHp(Math.min(newHp, status.getMaxHp()));  // Clamp HP to maxHp
     }
 
+    public void maxHeal() {
+        int maxHp = status.getMaxHp();
+        status.setHp(maxHp);
+    }
+    
     // Helper method to restore AP with validation
     public void restoreAP(int amount) {
         int newAp = status.getAp() + amount;
         status.setAp(Math.min(newAp, status.getMaxAp()));  // Clamp AP to maxAp
     }
 
+    public void maxAP() {
+        int maxAp = status.getMaxAp();
+        status.setAp(maxAp);
+    }
+    
 	@Override
 	public boolean isAlive() {
         return status.getHp() > 0;
@@ -60,5 +70,8 @@ public class Enemy extends GameEntity implements Combatant {
         return attackPower;
     }
 
-    // Additional enemy-specific methods can be added here
+	@Override
+	public Inventory<Card> getInventory() {
+		return null;
+	}
 }

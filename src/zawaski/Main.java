@@ -121,7 +121,11 @@ public class Main {
                     logout = true;
                     break;
                 case "5":
-                    battleSystem.printPlayerInventory();
+                	if (currentCharacter != null) {
+                		battleSystem.printPlayerInventory();
+                	} else {
+                		System.out.println("No character selected. Please create or select a character first.");
+                	}
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -164,6 +168,7 @@ public class Main {
 	                        if (selectedIndex >= 0 && selectedIndex < userCharacters.size()) {
 	                            currentCharacter = userCharacters.get(selectedIndex);
 	                            System.out.println("Character '" + currentCharacter.getCharacterName() + "' selected.");
+	                            battleSystem.setPlayer(currentCharacter);
 	                        } else {
 	                            System.out.println("Invalid selection. Please try again.");
 	                        }
@@ -192,6 +197,8 @@ public class Main {
 	                    int newId = Character.generateNewId();
 	                    Character newCharacter = new Character(newId, newCharName, currentUser.getUsername());
 	                    currentCharacter = newCharacter;
+	                    currentCharacter.addStartingCard();
+	                    battleSystem.setPlayer(currentCharacter);
 	                    System.out.println("Character '" + newCharName + "' created successfully with ID " + newId + ".");
 	                } else {
 	                    System.out.println("No user logged in.");
@@ -311,7 +318,7 @@ public class Main {
 
         // Initialize battle system
         battleSystem = new BattleSystem();
-        battleSystem.populatePlayerInventory();
+        battleSystem.setPlayer(currentCharacter);
         battleSystem.initializeBattle(currentCharacter, enemy);
         battleSystem.startBattle();
 
@@ -339,6 +346,7 @@ public class Main {
         }
 
         System.out.println("Battle ended. " + (battleSystem.isPlayerWinner() ? "You won!" : "You lost."));
+        battleSystem.rewardCard();
     }
 
 }

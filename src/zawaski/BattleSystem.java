@@ -4,12 +4,19 @@ public class BattleSystem {
     private Combatant player;
     private Combatant enemy;
     private boolean battleStarted;
-    private Inventory<Card> playerInventory;  // Player's full card collection
     private PlayerHand playerHand;             // Cards currently in hand
     private java.util.Random random;           // For random card drawing
 
- public Combatant getEnemy() {
+    public Combatant getEnemy() {
 		return enemy;
+	}
+    
+	public Combatant getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Character character) {
+		this.player = character;
 	}
 
 	// Start the battle
@@ -20,6 +27,13 @@ public class BattleSystem {
         System.out.println("Battle started! Initial hand: " + getHandCardNames());
     }
     
+    public void restoreAll(Character character, Enemy enemy) {
+    	player.maxHeal();
+        player.maxHeal();
+        enemy.maxHeal();
+        enemy.maxAP();
+    }
+    
  // Initialize battle with a player character
     public void initializeBattle(Character character, Enemy enemy) {
     	if (character == null) {
@@ -28,23 +42,29 @@ public class BattleSystem {
         }
     	this.player = character; // Use the existing Character instance passed in
         this.enemy = enemy;
-        player.getStatus().setHp(player.getStatus().getMaxHp());
-        player.getStatus().setAp(player.getStatus().getMaxAp());
-        enemy.getStatus().setHp(enemy.getStatus().getMaxHp());
-        enemy.getStatus().setAp(enemy.getStatus().getMaxAp());
+        
+        restoreAll(character, enemy);
         
         System.out.println("Battle initialized between " + player.getName() + " and " + enemy.getName());
     }
     
     public void populatePlayerInventory() {
-        playerInventory.addItem(CardFactory.createCard("Fireball"));
-        playerInventory.addItem(CardFactory.createCard("Heal"));
+    	Inventory<Card> inventory = player.getInventory();
+        inventory.addItem(CardFactory.createCard("Fireball"));
+        inventory.addItem(CardFactory.createCard("Heal"));
+        // Add more cards as needed
+    }
+    
+    public void rewardCard() {
+    	Inventory<Card> inventory = player.getInventory();
+        inventory.addItem(CardFactory.createCard("Drain"));
         // Add more cards as needed
     }
 
     public void drawCards(int n) {
         // Get a copy of the inventory cards to shuffle
-        java.util.List<Card> availableCards = playerInventory.getItems();
+    	Inventory<Card> inventory = player.getInventory();
+        java.util.List<Card> availableCards = inventory.getItems();
         java.util.List<Card> shuffled = new java.util.ArrayList<>(availableCards);
         java.util.Collections.shuffle(shuffled, random);
 
@@ -57,8 +77,9 @@ public class BattleSystem {
     }
     
     public void printPlayerInventory() {
+    	Inventory<Card> inventory = player.getInventory();
         System.out.println("Player Inventory contains:");
-        for (Card card : playerInventory.getItems()) {
+        for (Card card : inventory.getItems()) {
             System.out.println("- " + card.getCardName() + " (AP: " + card.getApCost() + ")");
         }
     }
@@ -136,7 +157,6 @@ public class BattleSystem {
 
     public BattleSystem() {
         this.battleStarted = false;
-        this.setPlayerInventory(new Inventory<>());
         this.setPlayerHand(new PlayerHand());
         this.setRandom(new java.util.Random());
     }
@@ -240,17 +260,6 @@ public class BattleSystem {
         System.out.println("Turn ended.");
         // Additional turn-end logic can be added here
     }
-
-
-	public Inventory<Card> getPlayerInventory() {
-		return playerInventory;
-	}
-
-
-	public void setPlayerInventory(Inventory<Card> playerInventory) {
-		this.playerInventory = playerInventory;
-	}
-
 
 	public PlayerHand getPlayerHand() {
 		return playerHand;

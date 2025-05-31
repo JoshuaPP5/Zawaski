@@ -16,6 +16,15 @@ public class CardFactory {
             character.heal(20);  // Use helper method for healing
         }));
 
+        cardDefinitions.put("AP Potion", new Card("AP Potion", 0, (character, battleSystem) -> {
+            character.restoreAP(5);  // Use helper method for healing
+        }));
+        
+        cardDefinitions.put("Drain", new Card("Drain", 3, (character, battleSystem) -> {
+            character.heal(5);  // Use helper method for healing
+            battleSystem.getEnemy().takeDamage(5);
+        }));
+        
         // Add more cards here...
     }
 

@@ -1,4 +1,2 @@
-2:Enemy Goblin:AI:100:50:1
-3:Enemy Goblin:AI:100:50:1
-4:Enemy Goblin:AI:100:50:1
-1:SJ:JPP:30:48:1
+1:SJ:JPP:45:46:1:Fireball,Heal,Drain
+2:SJ2:JPP:100:50:1:Fireball,Heal
