@@ -76,7 +76,7 @@ public class BattleSystem {
         this.player = character;
         this.enemy = selectRandomEnemy();  // Randomly select enemy here
         restoreAll(character, enemy);
-        System.out.println("Battle initialized between " + player.getName() + " and " + enemy.getName());
+        System.out.println("\nBattle initialized between " + player.getName() + " and " + enemy.getName() + "!");
     }
 
     

@@ -1,8 +1,10 @@
 package zawaski;
 
 public class Status {
-    private int hp;
+	private int hp;
+    private int maxHp;
     private int ap;
+    private int maxAp;
     private int level;
     private int exp;
     private int gold;
@@ -14,29 +16,36 @@ public class Status {
      * Default constructor initializes HP and AP to max, level to 1, and exp to 0.
      */
     public Status() {
+    	this.maxHp = MAX_HP;
         this.hp = MAX_HP;
+        this.maxAp = MAX_AP;
         this.ap = MAX_AP;
         this.level = 1;
         this.exp = 0;
         this.gold = 0;
     }
 
-    /**
-     * Constructor with HP and AP, level defaults to 1, exp to 0.
-     */
-    public Status(int hp, int ap) {
-        this(hp, ap, 1, 0, 0);
+    public Status(int maxHp, int maxAp) {
+        this.maxHp = maxHp;
+        this.hp = maxHp;
+        this.maxAp = maxAp;
+        this.ap = maxAp;
+        this.level = 1;
+        this.exp = 0;
+        this.gold = 0;
     }
 
     /**
      * Constructor with HP, AP, Level, exp, an gold.
      */
-    public Status(int hp, int ap, int level, int exp, int gold) {
-        setHp(hp);
-        setAp(ap);
-        setLevel(level);
-        setExp(exp);
-        setGold(gold);
+    public Status(int hp, int maxHp, int ap, int maxAp, int level, int exp, int gold) {
+        this.hp = hp;
+        this.maxHp = maxHp;
+        this.ap = ap;
+        this.maxAp = maxAp;
+        this.level = level;
+        this.exp = exp;
+        this.gold = gold;
     }
 
     // Getter and setter for gold
@@ -64,42 +73,20 @@ public class Status {
         return false;
     }
     
-    // Getter for HP
-    public int getHp() {
-        return hp;
-    }
+    public int getHp() { return hp; }
+    public void setHp(int hp) { this.hp = Math.min(hp, maxHp); }
 
-    // Setter for HP with clamping between 0 and max HP
-    public void setHp(int hp) {
-        if (hp < 0) {
-            this.hp = 0;
-        } else if (hp > getMaxHp()) {
-            this.hp = getMaxHp();
-        } else {
-            this.hp = hp;
-        }
-    }
-
-    // Getter for AP
-    public int getAp() {
-        return ap;
-    }
-
-    // Setter for AP with clamping between 0 and max AP
-    public void setAp(int ap) {
-        if (ap < 0) {
-            this.ap = 0;
-        } else if (ap > getMaxAp()) {
-            this.ap = getMaxAp();
-        } else {
-            this.ap = ap;
-        }
-    }
+    public int getMaxHp() { return maxHp; }
+    public void setMaxHp(int maxHp) { this.maxHp = maxHp; }
+    
+    public int getAp() { return ap; }
+    public void setAp(int ap) { this.ap = Math.min(ap, maxAp);}
+    
+    public int getMaxAp() { return maxAp; }
+    public void setMaxAp(int maxAp) { this.maxAp = maxAp; }
 
     // Getter for Level
-    public int getLevel() {
-        return level;
-    }
+    public int getLevel() { return level; }
 
     // Setter for Level
     public void setLevel(int level) {
@@ -111,9 +98,7 @@ public class Status {
     }
 
     // Getter for exp (XP)
-    public int getExp() {
-        return exp;
-    }
+    public int getExp() { return exp; }
 
     // Setter for exp (XP)
     public void setExp(int exp) {
@@ -128,17 +113,17 @@ public class Status {
      * Calculates the maximum HP based on the current level.
      * Example scaling: +10 HP per level above 1.
      */
-    public int getMaxHp() {
-        return MAX_HP + (level - 1) * 10;
-    }
+//    public int getMaxHp() {
+//        return MAX_HP + (level - 1) * 10;
+//    }
 
     /**
      * Calculates the maximum AP based on the current level.
      * Example scaling: +5 AP per level above 1.
      */
-    public int getMaxAp() {
-        return MAX_AP + (level - 1) * 5;
-    }
+//    public int getMaxAp() {
+//        return MAX_AP + (level - 1) * 5;
+//    }
 
     /**
      * Calculates the XP threshold required to level up.

@@ -26,11 +26,11 @@ public class Character extends GameEntity implements Combatant {
     }
 
     // Updated constructor for loading from file (with gold)
-    public Character(int id, String characterName, String ownerUsername, int hp, int ap, int level, int xp, int gold, List<String> inventoryItems) {
+    public Character(int id, String characterName, String ownerUsername, int hp, int maxHp, int ap, int maxAp, int level, int xp, int gold, List<String> inventoryItems) {
         super(id, characterName);
         this.characterName = characterName;
         this.ownerUsername = ownerUsername;
-        this.status = new Status(hp, ap, level, xp, gold);
+        this.status = new Status(hp, maxHp, ap, maxAp, level, xp, gold);
         this.inventory = new Inventory<>();
         for (String item : inventoryItems) {
             Card card = CardFactory.createCard(item);
@@ -51,26 +51,13 @@ public class Character extends GameEntity implements Combatant {
 
     // Upgrade status (called on level up)
     public void upgradeStatus() {
+        status.setMaxHp(status.getMaxHp() + 10);
         status.setHp(status.getHp() + 10);
+        status.setMaxAp(status.getMaxAp() + 5);
         status.setAp(status.getAp() + 5);
         status.setLevel(status.getLevel() + 1);
         saveCharacterData();
     }
-
-    // Add experience points and handle level up if threshold reached
-//    public void addExperience(int amount) {
-//        if (amount <= 0) return;  // Ignore non-positive XP
-//
-//        status.setExp(status.getExp() + amount);
-//
-//        // Check for level up
-//        while (status.getExp() >= getXpThresholdForNextLevel()) {
-//            status.setExp(status.getExp() - getXpThresholdForNextLevel());
-//            upgradeStatus();
-//        }
-//
-//        saveCharacterData();
-//    }
 
     // Calculate XP threshold for next level (example: 100 XP per level)
     public int getXpThresholdForNextLevel() {
@@ -118,8 +105,10 @@ public class Character extends GameEntity implements Combatant {
 
             // Added gold field after XP
             String dataLine = id + ":" + characterName + ":" + ownerUsername + ":" +
-                              status.getHp() + ":" + status.getAp() + ":" + status.getLevel() + ":" +
-                              status.getExp() + ":" + status.getGold() + ":" + inventoryData;
+                    status.getHp() + ":" + status.getMaxHp() + ":" +
+                    status.getAp() + ":" + status.getMaxAp() + ":" +
+                    status.getLevel() + ":" + status.getExp() + ":" +
+                    status.getGold() + ":" + inventoryData;
 
             lines.add(dataLine);
 
@@ -192,22 +181,24 @@ public class Character extends GameEntity implements Combatant {
             List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
             for (String line : lines) {
                 String[] parts = line.split(":");
-                if (parts.length >= 9) {  // Now expecting 9 parts (including gold)
+                if (parts.length >= 11) {
                     int id = Integer.parseInt(parts[0]);
                     String charName = parts[1];
                     String owner = parts[2];
                     int hp = Integer.parseInt(parts[3]);
-                    int ap = Integer.parseInt(parts[4]);
-                    int level = Integer.parseInt(parts[5]);
-                    int xp = Integer.parseInt(parts[6]);
-                    int gold = Integer.parseInt(parts[7]);
-                    String inventoryData = parts[8];
+                    int maxHp = Integer.parseInt(parts[4]);
+                    int ap = Integer.parseInt(parts[5]);
+                    int maxAp = Integer.parseInt(parts[6]);
+                    int level = Integer.parseInt(parts[7]);
+                    int xp = Integer.parseInt(parts[8]);
+                    int gold = Integer.parseInt(parts[9]);
+                    String inventoryData = parts[10];
                     List<String> inventoryItems = new ArrayList<>();
                     if (!inventoryData.isEmpty()) {
                         inventoryItems = Arrays.asList(inventoryData.split(","));
                     }
                     if (owner.equals(username)) {
-                        characters.add(new Character(id, charName, owner, hp, ap, level, xp, gold, inventoryItems));
+                    	characters.add(new Character(id, charName, owner, hp, maxHp, ap, maxAp, level, xp, gold, inventoryItems));
                     }
                 }
             }
@@ -246,14 +237,6 @@ public class Character extends GameEntity implements Combatant {
         return status.getGold();
     }
 
-    // Add gold to character
-//    public void addGold(int amount) {
-//        if (amount > 0) {
-//            status.addGold(amount);
-//            saveCharacterData();
-//        }
-//    }
-
     // Deduct gold from character, return true if successful
     public boolean deductGold(int amount) {
         if (amount > 0 && status.deductGold(amount)) {
@@ -262,7 +245,6 @@ public class Character extends GameEntity implements Combatant {
         }
         return false;
     }
-
     
 	@Override
 	public void maxHeal() {
@@ -308,6 +290,10 @@ public class Character extends GameEntity implements Combatant {
         }
 	}
 
+	public int getLevel() {
+		return status.getLevel();
+	}
+	
 	@Override
 	public void addExp(int amount) {
 		if (amount <= 0) return;  // Ignore non-positive XP
