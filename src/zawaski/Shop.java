@@ -13,7 +13,7 @@ public class Shop {
     public void buyCard(Card card, Inventory<Card> playerInventory) {
         if (cardInventory.getItems().contains(card)) {
             playerInventory.addItem(card);
-            cardInventory.removeItem(card);
+//            cardInventory.removeItem(card);
             System.out.println("Card bought: " + card.getCardName());
         } else {
             System.out.println("Card not available in shop.");

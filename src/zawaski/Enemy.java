@@ -1,23 +1,35 @@
 package zawaski;
 
 public class Enemy extends GameEntity implements Combatant {
-    private String enemyType;
+    private String name;
     private int level;
     private Status status;
     private int attackPower;
+    private int exp;  // Experience dropped by the enemy
+    private int gold; // Gold dropped by the enemy
 
-    // Updated constructor with id and name parameters
-    public Enemy(int id, String enemyType, int level, int maxHp, int maxAp, int attackPower) {
-        super(id, enemyType);  // Call to GameEntity constructor
-        this.enemyType = enemyType;
+ // Updated constructor with id, name, level, maxHp, maxAp, attackPower, exp, and gold parameters
+    public Enemy(int id, String name, int level, int maxHp, int maxAp, int attackPower, int exp, int gold) {
+        super(id, name);  // Call to GameEntity constructor
+        this.name = name;
         this.level = level;
         this.status = new Status(maxHp, maxAp);
         this.attackPower = attackPower;
+        this.exp = exp;
+        this.gold = gold;
     }
 
+    public int getExp() {
+        return this.exp;
+    }
+
+    public int getGold() {
+        return this.gold;
+    }
+    
     // Getter for enemy type
-    public String getEnemyType() {
-        return enemyType;
+    public String getName() {
+        return name;
     }
 
     // Getter for level
@@ -73,5 +85,15 @@ public class Enemy extends GameEntity implements Combatant {
 	@Override
 	public Inventory<Card> getInventory() {
 		return null;
+	}
+
+	@Override
+	public void addExp(int amount) {
+		return;
+	}
+
+	@Override
+	public void addGold(int amount) {
+		return;
 	}
 }

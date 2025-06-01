@@ -1,11 +1,46 @@
 package zawaski;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BattleSystem {
     private Combatant player;
     private Combatant enemy;
     private boolean battleStarted;
     private PlayerHand playerHand;             // Cards currently in hand
     private java.util.Random random;           // For random card drawing
+    private List<Enemy> enemies = new ArrayList<>();
+
+    // Method to award experience and gold to the player
+    public void awardRewards(Character character) {
+        player.addExp(enemy.getExp());  // Add experience to player
+        player.addGold(enemy.getGold());  // Add gold to player
+        System.out.println("Rewards available: " + enemy.getExp() + " EXP, " + enemy.getGold() + " Gold");
+    }
+    
+    public void addEnemy(Enemy enemy) {
+        enemies.add(enemy);
+    }
+
+    public void removeEnemy(Enemy enemy) {
+        enemies.remove(enemy);
+    }
+    
+    // Enemy list management methods can be removed or kept if you want external control
+    // public void addEnemy(Enemy enemy) { enemies.add(enemy); }
+    // public void removeEnemy(Enemy enemy) { enemies.remove(enemy); }
+
+    // Initialize enemies if empty, then select random enemy
+    public Enemy selectRandomEnemy() {
+        if (enemies.isEmpty()) {
+            // Initialize enemy list here
+            enemies.add(new Enemy(1, "Goblin", 1, 50, 10, 15, 10, 10));
+            enemies.add(new Enemy(2, "Orc", 2, 70, 12, 18, 15, 15));
+            enemies.add(new Enemy(3, "Troll", 3, 80, 15, 22, 20, 20));
+        }
+        return enemies.get(random.nextInt(enemies.size()));
+    }
+
 
     public Combatant getEnemy() {
 		return enemy;
@@ -24,29 +59,26 @@ public class BattleSystem {
         battleStarted = true;
         playerHand.clearHand();
         drawCards(3);
-        System.out.println("Battle started! Initial hand: " + getHandCardNames());
     }
     
-    public void restoreAll(Character character, Enemy enemy) {
+    public void restoreAll(Character character, Combatant enemy) {
     	player.maxHeal();
-        player.maxHeal();
+        player.maxAP();
         enemy.maxHeal();
         enemy.maxAP();
     }
     
  // Initialize battle with a player character
-    public void initializeBattle(Character character, Enemy enemy) {
-    	if (character == null) {
-    		System.out.println("Error Null");
+    public void initializeBattle(Character character) {
+        if (character == null) {
             throw new IllegalArgumentException("Character cannot be null");
         }
-    	this.player = character; // Use the existing Character instance passed in
-        this.enemy = enemy;
-        
+        this.player = character;
+        this.enemy = selectRandomEnemy();  // Randomly select enemy here
         restoreAll(character, enemy);
-        
         System.out.println("Battle initialized between " + player.getName() + " and " + enemy.getName());
     }
+
     
     public void populatePlayerInventory() {
     	Inventory<Card> inventory = player.getInventory();
@@ -62,16 +94,21 @@ public class BattleSystem {
     }
 
     public void drawCards(int n) {
-        // Get a copy of the inventory cards to shuffle
-    	Inventory<Card> inventory = player.getInventory();
+        Inventory<Card> inventory = player.getInventory();
         java.util.List<Card> availableCards = inventory.getItems();
         java.util.List<Card> shuffled = new java.util.ArrayList<>(availableCards);
         java.util.Collections.shuffle(shuffled, random);
 
-        int drawCount = Math.min(n, shuffled.size());
+        int totalCards = shuffled.size();
 
-        for (int i = 0; i < drawCount; i++) {
-            Card card = shuffled.get(i);
+        // If no cards are available, just return early
+        if (totalCards == 0) {
+            return;
+        }
+
+        for (int i = 0; i < n; i++) {
+            // Use modulo to cycle through the shuffled list repeatedly
+            Card card = shuffled.get(i % totalCards);
             playerHand.addCard(card);
         }
     }
@@ -132,25 +169,16 @@ public class BattleSystem {
     }
 
     public void enemyTurn() {
-        if (!enemy.isAlive()) {
-            System.out.println(enemy.getName() + " is already defeated.");
-            return;
-        }
+        if (isBattleOver()) { return; }
 
         System.out.println("Enemy's turn:");
         // Simple enemy attack logic
         player.takeDamage(enemy.getAttackPower());
         System.out.println(enemy.getName() + " attacks " + player.getName() + " for " + enemy.getAttackPower() + " damage.");
 
-        if (!player.isAlive()) {
-            System.out.println(player.getName() + " has been defeated. Game Over.");
-        } else {
-            // Increase player's AP by 5 instead of resetting
-            int currentAp = player.getStatus().getAp();
-            int newAp = currentAp + 5;
-            if (newAp > player.getStatus().getMaxAp()) newAp = player.getStatus().getMaxAp();
-            player.getStatus().setAp(newAp);
-            System.out.println(player.getName() + "'s turn begins. AP increased by 5 to " + newAp + ".");
+        if (player.isAlive()) {
+            player.restoreAP(5);;
+            System.out.println(player.getName() + "'s turn begins. AP increased by 5 to " + player.getStatus().getAp() + ".");
             drawCards(1);
         }
     }
@@ -182,7 +210,7 @@ public class BattleSystem {
 
         // Check if enemy is defeated
         if (!enemy.isAlive()) {
-            System.out.println(enemy.getName() + " has been defeated!");
+//            System.out.println(enemy.getName() + " has been defeated!");
             return;
         }
 

@@ -10,5 +10,9 @@ public interface Combatant {
     String getName();
     boolean isAlive();
     int getAttackPower();
+    int getExp();
+    void addExp(int amount);
+    int getGold();
+    void addGold(int amount);
 	Inventory<Card> getInventory();
 }

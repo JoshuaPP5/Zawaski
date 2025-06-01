@@ -25,6 +25,10 @@ public class CardFactory {
             battleSystem.getEnemy().takeDamage(5);
         }));
         
+        cardDefinitions.put("Draw Card", new Card("Draw Card", 5, (character, battleSystem) -> {
+            battleSystem.drawCards(1);
+        }));
+        
         // Add more cards here...
     }
 
