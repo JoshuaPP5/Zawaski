@@ -462,7 +462,6 @@ public class GameController {
         if (this.gm.getBattleSystem().isPlayerWinner()) { 
         	this.gm.getBattleSystem().awardRewards(this.gm.getCurrentCharacter()); 
         }
-        this.gm.getCurrentCharacter().addExp(1000);
         this.gm.getBattleSystem().restoreAll(this.gm.getCurrentCharacter(), enemy);
     }
 
