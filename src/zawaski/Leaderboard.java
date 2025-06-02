@@ -1,55 +1,9 @@
 package zawaski;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Leaderboard {
-
-    private static final String CHARACTER_DATA_FILE = "characters.dat";
-
-    /**
-     * Load all characters from the characters.dat file.
-     * @return List of all characters.
-     */
-    public static List<Character> loadAllCharacters() {
-        List<Character> characters = new ArrayList<>();
-        Path path = Paths.get(CHARACTER_DATA_FILE);
-        if (!Files.exists(path)) {
-            System.out.println("Character data file not found: " + CHARACTER_DATA_FILE);
-            return characters;
-        }
-        try {
-            List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-            for (String line : lines) {
-                String[] parts = line.split(":");
-                if (parts.length >= 11) {
-                    int id = Integer.parseInt(parts[0]);
-                    String charName = parts[1];
-                    String owner = parts[2];
-                    int hp = Integer.parseInt(parts[3]);
-                    int maxHp = Integer.parseInt(parts[4]);
-                    int ap = Integer.parseInt(parts[5]);
-                    int maxAp = Integer.parseInt(parts[6]);
-                    int level = Integer.parseInt(parts[7]);
-                    int xp = Integer.parseInt(parts[8]);
-                    int gold = Integer.parseInt(parts[9]);
-                    String inventoryData = parts[10];
-                    List<String> inventoryItems = new ArrayList<>();
-                    if (!inventoryData.isEmpty()) {
-                        inventoryItems = Arrays.asList(inventoryData.split(","));
-                    }
-                    characters.add(new Character(id, charName, owner, hp, maxHp, ap, maxAp, level, xp, gold, inventoryItems));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return characters;
-    }
-
     /**
      * Generate the leaderboard sorted by the specified attribute ("level" or "gold").
      * Limits each user to their top 3 characters.
@@ -57,7 +11,7 @@ public class Leaderboard {
      * @return List of characters representing the leaderboard.
      */
     public static List<Character> generateLeaderboard(String sortBy, int page, int pageSize) {
-        List<Character> allCharacters = loadAllCharacters();
+        List<Character> allCharacters = FileController.loadAllCharacters("characters.dat");
 
         // Comparator based on sortBy parameter with descending order
         Comparator<Character> comparator;

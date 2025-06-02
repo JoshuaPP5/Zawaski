@@ -1,10 +1,6 @@
 package zawaski;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Character extends GameEntity implements Combatant {
     private String characterName;
@@ -13,15 +9,14 @@ public class Character extends GameEntity implements Combatant {
     private int attackPower;
     private Inventory<Card> inventory;
 
-    private static final String CHARACTER_DATA_FILE = "characters.dat";
 
     // Updated constructor for new character creation (gold defaults to 0)
     public Character(int id, String characterName, String ownerUsername) {
         super(id, characterName);
         this.characterName = characterName;
         this.ownerUsername = ownerUsername;
-        this.status = new Status();  // gold initialized to 0 by default
         this.inventory = new Inventory<>();
+        this.status = new Status();  // gold initialized to 0 by default
         saveCharacterData();
     }
 
@@ -30,8 +25,8 @@ public class Character extends GameEntity implements Combatant {
         super(id, characterName);
         this.characterName = characterName;
         this.ownerUsername = ownerUsername;
-        this.status = new Status(hp, maxHp, ap, maxAp, level, xp, gold);
         this.inventory = new Inventory<>();
+        this.status = new Status(hp, maxHp, ap, maxAp, level, xp, gold);
         for (String item : inventoryItems) {
             Card card = CardFactory.createCard(item);
             inventory.addItem(card);
@@ -67,18 +62,16 @@ public class Character extends GameEntity implements Combatant {
 
     // Delete character data from file
     public void deleteCharacter() {
-        try {
-            List<String> lines = Files.readAllLines(Paths.get(CHARACTER_DATA_FILE), StandardCharsets.UTF_8);
-            List<String> updatedLines = new ArrayList<>();
-            for (String line : lines) {
-                if (!line.startsWith(this.id + ":")) {
-                    updatedLines.add(line);
-                }
-            }
-            Files.write(Paths.get(CHARACTER_DATA_FILE), updatedLines, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    	List<Character> allCharacters = FileController.loadAllCharacters("characters.dat");
+
+    	for(Character c : allCharacters) {
+    		if(c.getId() == this.id) {
+    			allCharacters.remove(c);
+    			break;
+    		}
+    	}
+    	
+    	FileController.saveAllCharacters(allCharacters, "characters.dat");
     }
 
     @Override
@@ -88,35 +81,17 @@ public class Character extends GameEntity implements Combatant {
 
  // Save character data including gold
     private void saveCharacterData() {
-        try {
-            List<String> lines = new ArrayList<>();
-            Path path = Paths.get(CHARACTER_DATA_FILE);
+    	List<Character> allCharacters = FileController.loadAllCharacters("characters.dat");
 
-            if (Files.exists(path)) {
-                lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-                lines.removeIf(line -> line.startsWith(this.id + ":"));
-            }
-
-            List<String> cardNames = inventory.getItems().stream()
-                .map(Card::getCardName)
-                .collect(Collectors.toList());
-
-            String inventoryData = String.join(",", cardNames);
-
-            // Added gold field after XP
-            String dataLine = id + ":" + characterName + ":" + ownerUsername + ":" +
-                    status.getHp() + ":" + status.getMaxHp() + ":" +
-                    status.getAp() + ":" + status.getMaxAp() + ":" +
-                    status.getLevel() + ":" + status.getExp() + ":" +
-                    status.getGold() + ":" + inventoryData;
-
-            lines.add(dataLine);
-
-            Files.write(path, lines, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    	for(Character c : allCharacters) {
+    		if(c.getId() == this.id) {
+    			allCharacters.remove(c);
+    			allCharacters.add(this);
+    			break;
+    		}
+    	}
+    	
+    	FileController.saveAllCharacters(allCharacters, "characters.dat");
     }
 
     // Getters and setters
@@ -172,64 +147,21 @@ public class Character extends GameEntity implements Combatant {
 
     // Load characters by user with gold parsing
     public static List<Character> loadCharactersByUser(String username) {
+        List<Character> allCharacters = FileController.loadAllCharacters("characters.dat");
         List<Character> characters = new ArrayList<>();
-        Path path = Paths.get(CHARACTER_DATA_FILE);
-        if (!Files.exists(path)) {
-            return characters;
-        }
-        try {
-            List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-            for (String line : lines) {
-                String[] parts = line.split(":");
-                if (parts.length >= 11) {
-                    int id = Integer.parseInt(parts[0]);
-                    String charName = parts[1];
-                    String owner = parts[2];
-                    int hp = Integer.parseInt(parts[3]);
-                    int maxHp = Integer.parseInt(parts[4]);
-                    int ap = Integer.parseInt(parts[5]);
-                    int maxAp = Integer.parseInt(parts[6]);
-                    int level = Integer.parseInt(parts[7]);
-                    int xp = Integer.parseInt(parts[8]);
-                    int gold = Integer.parseInt(parts[9]);
-                    String inventoryData = parts[10];
-                    List<String> inventoryItems = new ArrayList<>();
-                    if (!inventoryData.isEmpty()) {
-                        inventoryItems = Arrays.asList(inventoryData.split(","));
-                    }
-                    if (owner.equals(username)) {
-                    	characters.add(new Character(id, charName, owner, hp, maxHp, ap, maxAp, level, xp, gold, inventoryItems));
-                    }
-                }
+
+        for (Character c: allCharacters) {
+            if (c.getOwnerUsername().equals(username)) {
+            	characters.add(c);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        
         return characters;
     }
 
     // Static method to generate a new unique ID for characters
     public static int generateNewId() {
-        int maxId = 0;
-        Path path = Paths.get(CHARACTER_DATA_FILE);
-        if (!Files.exists(path)) {
-            return 1;
-        }
-        try {
-            List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-            for (String line : lines) {
-                String[] parts = line.split(":");
-                if (parts.length > 0) {
-                    int id = Integer.parseInt(parts[0]);
-                    if (id > maxId) {
-                        maxId = id;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return maxId + 1;
+        return FileController.loadAllCharacters("characters.dat").size() + 1;
     }
 
     // Get current gold amount
