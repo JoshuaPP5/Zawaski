@@ -5,11 +5,11 @@ import java.util.function.BiConsumer;
 public class Card {
     private String cardName;
     private int apCost;
-    private int price;  // New field for price
-    private BiConsumer<Character, BattleSystem> effectFunction;
+    private int price;
+    private BiConsumer<CharacterModel, BattleSystem> effectFunction;
 
-    // Updated constructor to include price
-    public Card(String cardName, int apCost, int price, BiConsumer<Character, BattleSystem> effectFunction) {
+
+    public Card(String cardName, int apCost, int price, BiConsumer<CharacterModel, BattleSystem> effectFunction) {
         this.cardName = cardName;
         this.apCost = apCost;
         this.price = price;
@@ -27,12 +27,16 @@ public class Card {
     public int getPrice() {
         return price;
     }
+    
+    public int getSellPrice() {
+    	return (int) (price / 2);
+    }
 
     public void setPrice(int price) {
         this.price = price;
     }
 
-    public void effect(Character character, BattleSystem battleSystem) {
+    public void effect(CharacterModel character, BattleSystem battleSystem) {
         effectFunction.accept(character, battleSystem);
     }
 }

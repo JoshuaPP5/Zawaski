@@ -13,37 +13,37 @@ public class EnemyManager {
         this.random = new Random();
     }
 
-    // Add an enemy to the list
+
     public void addEnemy(Enemy enemy) {
         enemies.add(enemy);
     }
 
-    // Remove an enemy from the list
+
     public void removeEnemy(Enemy enemy) {
         enemies.remove(enemy);
     }
 
-    // Get all enemies
+
     public List<Enemy> getAllEnemies() {
-        return new ArrayList<>(enemies); // Return a copy to avoid external modification
+        return new ArrayList<>(enemies);
     }
 
-    // Get a random enemy from the list
+
     public Enemy getRandomEnemy() {
         if (enemies.isEmpty()) {
-            return null; // Or throw an exception if preferred
+            return null;
         }
         int index = random.nextInt(enemies.size());
         return enemies.get(index);
     }
 
-    // Get multiple random enemies (without duplicates)
+
     public List<Enemy> getRandomEnemies(int count) {
         List<Enemy> copy = new ArrayList<>(enemies);
         List<Enemy> selected = new ArrayList<>();
 
         if (count >= enemies.size()) {
-            return copy; // Return all if count exceeds available enemies
+            return copy;
         }
 
         for (int i = 0; i < count; i++) {

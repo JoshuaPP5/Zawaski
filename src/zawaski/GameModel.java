@@ -2,14 +2,14 @@ package zawaski;
 
 public class GameModel {
 	private User currentUser;
-    private Character currentCharacter;
+    private CharacterModel currentCharacter;
     private BattleSystem battleSystem;
-    private Shop shop;
+    private ShopModel shop;
     
 	public GameModel() {
-		this.shop = new Shop();
+		this.shop = new ShopModel();
 		this.currentCharacter = null;
-		this.currentCharacter = null;
+		this.currentUser = null;
 		this.battleSystem = new BattleSystem();
 	}
 
@@ -21,11 +21,11 @@ public class GameModel {
 		this.currentUser = currentUser;
 	}
 
-	public Character getCurrentCharacter() {
+	public CharacterModel getCurrentCharacter() {
 		return currentCharacter;
 	}
 
-	public void setCurrentCharacter(Character currentCharacter) {
+	public void setCurrentCharacter(CharacterModel currentCharacter) {
 		this.currentCharacter = currentCharacter;
 	}
 
@@ -37,7 +37,7 @@ public class GameModel {
 		this.battleSystem = battleSystem;
 	}
 
-	public Shop getShop() {
+	public ShopModel getShop() {
 		return shop;
 	}
 }
