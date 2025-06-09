@@ -7,29 +7,28 @@ public class CardFactory {
     private static Map<String, Card> cardDefinitions = new HashMap<>();
 
     static {
-        // Define cards with their effects using Character helper methods
         cardDefinitions.put("Fireball", new Card("Fireball", 5, 100, (character, battleSystem) -> {
-            battleSystem.getEnemy().takeDamage(30);  // Use helper method for damage
+            battleSystem.getEnemy().takeDamage(30);
         }));
         
         cardDefinitions.put("Ice Lance", new Card("Ice Lance", 5, 200, (character, battleSystem) -> {
-            battleSystem.getEnemy().takeDamage(50);  // Use helper method for damage
+            battleSystem.getEnemy().takeDamage(50);
         }));
         
         cardDefinitions.put("Thunder Strike", new Card("Thunder Strike", 5, 250, (character, battleSystem) -> {
-            battleSystem.getEnemy().takeDamage(65);  // Use helper method for damage
+            battleSystem.getEnemy().takeDamage(65);
         }));
 
         cardDefinitions.put("Heal", new Card("Heal", 5, 100, (character, battleSystem) -> {
-            character.heal(20);  // Use helper method for healing
+            character.heal(20);
         }));
 
         cardDefinitions.put("AP Potion", new Card("AP Potion", 0, 125, (character, battleSystem) -> {
-            character.restoreAP(5);  // Use helper method for healing
+            character.restoreAP(5);
         }));
         
         cardDefinitions.put("Drain", new Card("Drain", 2, 125, (character, battleSystem) -> {
-            character.heal(15);  // Use helper method for healing
+            character.heal(15);
             battleSystem.getEnemy().takeDamage(15);
         }));
         
@@ -37,7 +36,7 @@ public class CardFactory {
             battleSystem.drawCards(1);
         }));
         
-        // Add more cards here...
+        // More cards
     }
 
     public static Card createCard(String cardName) {

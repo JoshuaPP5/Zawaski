@@ -1,7 +1,6 @@
 package zawaski;
 
-public class Enemy extends GameEntity implements Combatant {
-    private String name;
+public class Enemy extends GameEntity {
     private int level;
     private Status status;
     private int attackPower;
@@ -11,7 +10,6 @@ public class Enemy extends GameEntity implements Combatant {
  // Updated constructor with id, name, level, maxHp, maxAp, attackPower, exp, and gold parameters
     public Enemy(int id, String name, int level, int maxHp, int maxAp, int attackPower, int exp, int gold) {
         super(id, name);  // Call to GameEntity constructor
-        this.name = name;
         this.level = level;
         this.status = new Status(maxHp, maxAp);
         this.attackPower = attackPower;
@@ -81,19 +79,4 @@ public class Enemy extends GameEntity implements Combatant {
 	public int getAttackPower() {
         return attackPower;
     }
-
-	@Override
-	public Inventory<Card> getInventory() {
-		return null;
-	}
-
-	@Override
-	public void addExp(int amount) {
-		return;
-	}
-
-	@Override
-	public void addGold(int amount) {
-		return;
-	}
 }

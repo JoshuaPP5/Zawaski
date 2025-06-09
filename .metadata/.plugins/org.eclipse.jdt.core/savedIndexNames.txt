@@ -1,0 +1,7 @@
+INDEX VERSION 1.134+C:\Tempat Coding\java\Zawaski\.metadata\.plugins\org.eclipse.jdt.core
+1755401707.index
+1865797976.index
+1624300981.index
+1288848795.index
+2363525920.index
+223348709.index
