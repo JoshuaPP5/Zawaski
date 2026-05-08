@@ -61,7 +61,7 @@ java zawaski/Main
 ```
 
 
-##) Group 8 - Zawaski
-*) Joshua Putra Pratama - 2702238792
-*) Niko Sutiono - 2702215271
-*) Terrence Willem Susilo - 270223393
+## Group 8 - Zawaski
+* Joshua Putra Pratama - 2702238792
+* Niko Sutiono - 2702215271
+* Terrence Willem Susilo - 270223393
