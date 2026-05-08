@@ -3,6 +3,11 @@
 [![Java Version](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Game Genre](https://img.shields.io/badge/Genre-Strategic%20CCG-blueviolet?style=for-the-badge)](https://github.com/)
 
+## Group 8 - Zawaski
+* Joshua Putra Pratama - 2702238792
+* Niko Sutiono - 2702215271
+* Terrence Willem Susilo - 270223393
+
 > **"Will you conquer the tower, or will you become one of its forgotten souls?"**
 
 **Zawaski** is a strategic card-collecting game (CCG) developed in Java. Players find themselves trapped in the mysterious **Infinity Tower**, an ever-changing labyrinth filled with ancient guardians and arcane traps. To escape, you must harness the power of magical cards drawn from forgotten realms, forging powerful decks to overcome the tower’s many dangers.
@@ -59,9 +64,3 @@ cd Zawaski/bin
 ```
 java zawaski/Main
 ```
-
-
-## Group 8 - Zawaski
-* Joshua Putra Pratama - 2702238792
-* Niko Sutiono - 2702215271
-* Terrence Willem Susilo - 270223393
